@@ -21,6 +21,21 @@ is_azurecli_installed() {
     else
         return 1
     fi
+    
+}
+
+is_kubectl_installed(){
+    kubectl version --client > /dev/null 2>&1
+
+     # If the command returns 0, Kubectl is installed
+    if [ $? -eq 0 ]; then
+        echo "Kubectl is $?"
+        return 0
+    else
+        return 1
+    fi
+
+
 }
 
 # Deploy an AKS cluster
@@ -76,6 +91,14 @@ fi
 if ! [ is_azurecli_installed ]; then
     echo "Azure CLI is not installed. Installing Azure CLI..."
     curl -L https://aka.ms/InstallAzureCli | bash
+fi
+
+if ! [ is_kubectl_installed ]; then
+    echo "Kubectl is not installed. Installing Kubectl..."
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+else
+    echo "Kubectl is already installed"
 fi
 
 az login --use-device-code
