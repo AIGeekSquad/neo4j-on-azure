@@ -1,3 +1,5 @@
+#!/bin/bash
+
 is_helm_installed() {
     # Run the command to check if Helm is installed
     helm version > /dev/null 2>&1
