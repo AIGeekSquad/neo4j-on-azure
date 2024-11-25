@@ -28,10 +28,10 @@ echo "Name of the script: $0"
 echo "Total number of arguments: $#"
 echo "Values of all the arguments: $@"
 
-default_region="eastus"
+default_region="eastus2"
 default_resource_group="neo4j-aks-rg"
 default_password="aksneo4j"
-cluster_name="azneo4jcluster"
+cluster_name="az-neo4j-cluster"
 
 while getopts r:g:p:h flag
 do
@@ -39,7 +39,7 @@ do
         r) region=${OPTARG};;
         g) resource_group=${OPTARG};;
         p) password=${OPTARG};;
-        h) echo "Usage: $0 -r region -g resource_group -p password"; exit 1;;
+        h) echo "Usage: $0 -r region -g resource_group -p password -h help"; exit 1;;
     esac
 done
 
@@ -94,4 +94,4 @@ helm repo update
 
 kubectl create namespace neo4j
 
-helm upgrade --install cluster1 neo4j -n neo4j --set neo4j.password=$password -f aks-neo4j-values.yaml
+helm upgrade --install $cluster_name neo4j -n neo4j --set neo4j.password=$password  --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
