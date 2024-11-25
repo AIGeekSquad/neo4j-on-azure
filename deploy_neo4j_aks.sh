@@ -21,10 +21,9 @@ is_azurecli_installed() {
     else
         return 1
     fi
-    
 }
 
-is_kubectl_installed(){
+is_kubectl_installed() {
     kubectl version --client > /dev/null 2>&1
 
      # If the command returns 0, Kubectl is installed
@@ -34,8 +33,6 @@ is_kubectl_installed(){
     else
         return 1
     fi
-
-
 }
 
 # Deploy an AKS cluster
