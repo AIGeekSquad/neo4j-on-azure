@@ -45,7 +45,7 @@ echo "Values of all the arguments: $@"
 default_region="eastus2"
 default_resource_group="neo4j-aks-rg"
 default_password="aksneo4j"
-cluster_name="az-neo4j-cluster"
+default_cluster_name="az-neo4j-cluster"
 
 while getopts r:g:p:h flag
 do
@@ -53,7 +53,8 @@ do
         r) region=${OPTARG};;
         g) resource_group=${OPTARG};;
         p) password=${OPTARG};;
-        h) echo "Usage: $0 -r region -g resource_group -p password -h help"; exit 1;;
+        c) cluster_name=${OPTARG};;
+        h) echo "Usage: $0 -r region -g resource group -p password -c cluster name -h help"; exit 1;;
     esac
 done
 
@@ -78,6 +79,12 @@ if [[ -z $password ]]; then
     password=$default_password
     echo "Password is not provided. Using default region: $password"
 fi
+
+if [[ -z $cluster_name ]]; then
+    cluster_name=$default_cluster_name
+    echo "Cluster Name is not provided. Using default cluster name: $cluster_name"
+fi
+
 
 if ! is_helm_installed; then
     echo "Helm is not installed. Installing Helm..."
@@ -106,7 +113,7 @@ az group create --name $resource_group --location $region
 
 az aks create --resource-group $resource_group --name $cluster_name --node-count 2 --generate-ssh-keys
 
-az aks get-credentials -n $cluster_name -g $resource_group --admin
+az aks get-credentials -n $cluster_name -g $resource_group --admin --overwrite-existing 
 
 #disk_id=$(az disk create --name "neo4j-volume-manual" --size-gb "10" --max-shares 1 --resource-group "${node_resource_group}" --location ${AZ_LOCATION} --output tsv --query id)
 
