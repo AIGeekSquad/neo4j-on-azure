@@ -3,7 +3,7 @@
 is_helm_installed() {
     # Run the command to check if Helm is installed
     helm version > /dev/null 2>&1
-    
+
     # If the command returns 0, Helm is installed
     if [ $? -eq 0 ]; then
         return 0
@@ -79,7 +79,7 @@ if [[ -z $password ]]; then
     echo "Password is not provided. Using default region: $password"
 fi
 
-if ! [ is_helm_installed ]; then
+if ! is_helm_installed; then
     echo "Helm is not installed. Installing Helm..."
     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
     chmod 700 get_helm.sh
@@ -87,12 +87,12 @@ if ! [ is_helm_installed ]; then
 fi
 
 
-if ! [ is_azurecli_installed ]; then
+if ! is_azurecli_installed; then
     echo "Azure CLI is not installed. Installing Azure CLI..."
     curl -L https://aka.ms/InstallAzureCli | bash
 fi
 
-if ! [ is_kubectl_installed ]; then
+if ! is_kubectl_installed; then
     echo "Kubectl is not installed. Installing Kubectl..."
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
