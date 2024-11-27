@@ -123,4 +123,4 @@ helm repo update
 
 kubectl create namespace neo4j
 
-helm upgrade --install $cluster_name neo4j -n neo4j --set neo4j.password=$password --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
+helm upgrade --install $cluster_name neo4j/neo4j -n neo4j --set neo4j.password=$password --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
