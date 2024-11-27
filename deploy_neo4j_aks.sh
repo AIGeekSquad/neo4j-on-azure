@@ -46,6 +46,7 @@ default_region="eastus2"
 default_resource_group="neo4j-aks-rg"
 default_password="aksneo4j"
 default_cluster_name="az-neo4j-cluster"
+default_namespace="neo4j"
 
 while getopts r:g:p:h flag
 do
@@ -107,20 +108,45 @@ else
     echo "Kubectl is already installed"
 fi
 
+echo "Logging into Azure CLI via Device Code..."
 az login --use-device-code
 
+echo "Creating a new resource group... $resource_group"
 az group create --name $resource_group --location $region
 
+echo "Creating a new AKS cluster... $cluster_name. This may take a few minutes..."
 az aks create --resource-group $resource_group --name $cluster_name --node-count 2 --generate-ssh-keys
 
+echo "Getting credentials for the AKS cluster... $cluster_name"
 az aks get-credentials -n $cluster_name -g $resource_group --admin --overwrite-existing 
 
+echo "Verifying the context to the AKS cluster..."
 #disk_id=$(az disk create --name "neo4j-volume-manual" --size-gb "10" --max-shares 1 --resource-group "${node_resource_group}" --location ${AZ_LOCATION} --output tsv --query id)
 
+echo "Adding the Neo4j Helm repository..."
 helm repo add neo4j https://helm.neo4j.com/neo4j
 
+echo "Updating the Helm repository..."
 helm repo update
 
-kubectl create namespace neo4j
+echo "Getting additional Neo4j plugins ..."
+mkdir -p neo4j-plugins
+cd neo4j-plugins
+curl -O https://github.com/neo4j-labs/neosemantics/releases/download/5.20.0/neosemantics-5.20.0.jar
 
-helm upgrade --install $cluster_name neo4j/neo4j -n neo4j --set neo4j.password=$password --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
+echo "Creating a new namespace for Neo4j in cluster: $cluster_name ..."
+kubectl create namespace $default_namespace
+
+helm upgrade --install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password=$password --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
+
+echo "Waiting for the Neo4j pod to be ready; Please be patient..."
+sleep 10s
+
+echo "Installing Neo4j plugins ..."
+neo4j_pod_name=$(kubectl get --no-headers=true pods -o name --namespace $default_namespace | awk -F "/" '{print $2}')
+neo4j_statefulset_name=$(kubectl get --no-headers=true statefulset -o name --namespace ai-demo-neo4j | awk -F "/" '{print $2}')
+kubectl cp neo4j-plugins/* $default_namespace/$neo4j_pod_name:/plugins/
+kubectl exec $neo4j_pod_name --namespace $default_namespace -- sh -c "cp /var/lib/neo4j/labs/apoc-* /var/lib/neo4j/plugins/"
+
+echo "Restarting the Neo4j statefulset/pod to load the plugins..."
+kubectl rollout restart statefulset/$neo4j_statefulset_name --namespace $default_namespace

@@ -1,5 +1,6 @@
 $azrmInstall = Get-Module -Name AzureRM -ListAvailable
 $chocoInstall = choco -v
+$helmInstall = helm version --short
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
@@ -7,9 +8,9 @@ if ([string]::IsNullOrEmpty($chocoInstall)){
     Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 }
 
-$helmInstall = helm version --short
-
-choco install kubernetes-helm
+if ([string]::IsNullOrEmpty($helmInstall)){
+    choco install kubernetes-helm
+}
 
 
 Install-Module -Name Az -Repository PSGallery -Force

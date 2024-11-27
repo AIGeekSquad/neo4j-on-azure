@@ -109,7 +109,7 @@ volumes:
       accessModes:
         - ReadWriteOnce
       requests:
-        storage: 100Gi
+        storage: 175Gi
 
     # Only used if mode is set to "volume"
     # Provide an explicit volume to use
@@ -176,6 +176,17 @@ volumes:
   # any of the volume modes shown above for data can be used for licenses
   licenses:
     #labels for licenses pvc on creation (Valid only when mode set to selector | defaultStorageClass | dynamic | volumeClaimTemplate)
+    labels: {}
+    disableSubPathExpr: false
+    mode: "share" # share an existing volume (e.g. the data volume)
+    share:
+      name: "data"
+
+# provide a volume to use for plugins
+  # n.b. backups will be written to /plugins on the volume
+  # any of the volume modes shown above for data can be used for plugins
+  plugins:
+    #labels for plugin pvc on creation (Valid only when mode set to selector | defaultStorageClass | dynamic | volumeClaimTemplate)
     labels: {}
     disableSubPathExpr: false
     mode: "share" # share an existing volume (e.g. the data volume)
@@ -312,10 +323,11 @@ services:
 
 # Neo4j Configuration (yaml format)
 config:
-  server.directories.plugins: "/var/lib/neo4j/labs"
+  server.directories.plugins: "/var/lib/neo4j/plugins"
   server.config.strict_validation.enabled: "false"
-  dbms.security.procedures.unrestricted: "gds.*,apoc.*, n10s.*"
-  dbms.security.procedures.allowlist: "apoc.*, n10s.*"
+  dbms.security.procedures.unrestricted: "gds.*,apoc.,n10s."
+  dbms.security.procedures.allowlist: "apoc.*,n10s.*"
+  
   #dbms.cluster.minimum_initial_system_primaries_count: "3"
   # The amount of memory to use for mapping the store files.
   # The default page cache memory assumes the machine is dedicated to running
