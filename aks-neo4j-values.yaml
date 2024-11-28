@@ -323,9 +323,8 @@ services:
 
 # Neo4j Configuration (yaml format)
 config:
-  server.directories.plugins: "/var/lib/neo4j/plugins"
   server.config.strict_validation.enabled: "false"
-  dbms.security.procedures.unrestricted: "gds.*,apoc.,n10s."
+  dbms.security.procedures.unrestricted: "gds.*,apoc.*,n10s.*"
   dbms.security.procedures.allowlist: "apoc.*,n10s.*"
   
   #dbms.cluster.minimum_initial_system_primaries_count: "3"

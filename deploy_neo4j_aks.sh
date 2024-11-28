@@ -137,16 +137,17 @@ curl -O https://github.com/neo4j-labs/neosemantics/releases/download/5.20.0/neos
 echo "Creating a new namespace for Neo4j in cluster: $cluster_name ..."
 kubectl create namespace $default_namespace
 
-helm upgrade --install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password=$password --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
+helm upgrade --install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password=$password --set data.storageClassName="dynamic" --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
 
 echo "Waiting for the Neo4j pod to be ready; Please be patient..."
 sleep 10s
 
 echo "Installing Neo4j plugins ..."
 neo4j_pod_name=$(kubectl get --no-headers=true pods -o name --namespace $default_namespace | awk -F "/" '{print $2}')
-neo4j_statefulset_name=$(kubectl get --no-headers=true statefulset -o name --namespace ai-demo-neo4j | awk -F "/" '{print $2}')
+echo "Neo4j pod name: $neo4j_pod_name"
+neo4j_statefulset_name=$(kubectl get --no-headers=true statefulset -o name --namespace $default_namespace| awk -F "/" '{print $2}')
+echo "Neo4j statefulset name: $neo4j_statefulset_name"
 kubectl cp neo4j-plugins/* $default_namespace/$neo4j_pod_name:/plugins/
-kubectl exec $neo4j_pod_name --namespace $default_namespace -- sh -c "cp /var/lib/neo4j/labs/apoc-* /var/lib/neo4j/plugins/"
 
 echo "Restarting the Neo4j statefulset/pod to load the plugins..."
 kubectl rollout restart statefulset/$neo4j_statefulset_name --namespace $default_namespace
