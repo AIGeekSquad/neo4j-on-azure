@@ -79,6 +79,8 @@ volumes:
     # Valid values are share|selector|defaultStorageClass|volume|volumeClaimTemplate|dynamic
     # To get up-and-running quickly, for development or testing, use "defaultStorageClass" for a dynamically provisioned volume of the default storage class.
     mode: "dynamic"
+    persistentVolumeReclaimPolicy: Retain
+    reclaimPolicy: Retain
 
     # Only used if mode is set to "selector"
     # Will attach to existing volumes that match the selector
