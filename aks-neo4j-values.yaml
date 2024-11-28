@@ -327,7 +327,8 @@ services:
 config:
   server.config.strict_validation.enabled: "false"
   dbms.security.procedures.unrestricted: "gds.*,apoc.*,n10s.*"
-  dbms.security.procedures.allowlist: "apoc.*,n10s.*"
+  dbms.security.procedures.allowlist: "gds.*,apoc.*,n10s.*"
+  server.unmanaged_extension_classes: n10s.endpoint=/rdf
   
   #dbms.cluster.minimum_initial_system_primaries_count: "3"
   # The amount of memory to use for mapping the store files.
@@ -483,7 +484,7 @@ statefulset:
 
 # additional environment variables for the Neo4j Container
 env: 
-  NEO4J_PLUGINS: '["graph-data-science", "apoc", "n10s"]'
+  NEO4J_PLUGINS: '["graph-data-science", "apoc"]'
 
 # Other K8s configuration to apply to the Neo4j pod
 podSpec:
