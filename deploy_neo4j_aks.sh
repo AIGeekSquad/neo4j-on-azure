@@ -129,25 +129,29 @@ helm repo add neo4j https://helm.neo4j.com/neo4j
 echo "Updating the Helm repository..."
 helm repo update
 
-echo "Getting additional Neo4j plugins ..."
-mkdir -p neo4j-plugins
-cd neo4j-plugins
-curl -O https://github.com/neo4j-labs/neosemantics/releases/download/5.20.0/neosemantics-5.20.0.jar
+# echo "Getting additional Neo4j plugins ..."
+# mkdir -p neo4j-plugins
+# cd neo4j-plugins
+# curl -O https://github.com/neo4j-labs/neosemantics/releases/download/5.20.0/neosemantics-5.20.0.jar
 
 echo "Creating a new namespace for Neo4j in cluster: $cluster_name ..."
 kubectl create namespace $default_namespace
 
-helm upgrade --install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password=$password --set data.storageClassName="dynamic" --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
+# helm upgrade --install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password=$password --set data.storageClassName="dynamic" --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
+helm install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password=$password --version 5.20.0 -f neo4j-values.yaml 
 
 echo "Waiting for the Neo4j pod to be ready; Please be patient..."
 sleep 10s
 
-echo "Installing Neo4j plugins ..."
-neo4j_pod_name=$(kubectl get --no-headers=true pods -o name --namespace $default_namespace | awk -F "/" '{print $2}')
-echo "Neo4j pod name: $neo4j_pod_name"
-neo4j_statefulset_name=$(kubectl get --no-headers=true statefulset -o name --namespace $default_namespace| awk -F "/" '{print $2}')
-echo "Neo4j statefulset name: $neo4j_statefulset_name"
-kubectl cp neo4j-plugins/* $default_namespace/$neo4j_pod_name:/plugins/
+# echo "Installing Neo4j plugins ..."
+# neo4j_pod_name=$(kubectl get --no-headers=true pods -o name --namespace $default_namespace | awk -F "/" '{print $2}')
+# echo "Neo4j pod name: $neo4j_pod_name"
+# neo4j_statefulset_name=$(kubectl get --no-headers=true statefulset -o name --namespace $default_namespace| awk -F "/" '{print $2}')
+# echo "Neo4j statefulset name: $neo4j_statefulset_name"
+# kubectl cp neo4j-plugins/* $default_namespace/$neo4j_pod_name:/plugins/
 
-echo "Restarting the Neo4j statefulset/pod to load the plugins..."
-kubectl rollout restart statefulset/$neo4j_statefulset_name --namespace $default_namespace
+# echo "Restarting the Neo4j statefulset/pod to load the plugins..."
+# kubectl rollout restart statefulset/$neo4j_statefulset_name --namespace $default_namespace
+
+echo "Completed Neo4j installation script..."
+
