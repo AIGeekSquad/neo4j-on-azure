@@ -1,0 +1,67 @@
+// Project Intelligence: Neo4j on Azure
+
+// File Organization
+ROOT_DIR = Infrastructure templates (*.bicep, *.json)
+SCRIPTS_DIR = Deployment scripts (Python, PowerShell, Bash)
+PLUGINS_DIR = Neo4j plugins
+CONFIG_PATTERN = *-values.yaml for Helm configurations
+DOCS_DIR = memory-bank for documentation
+
+// Infrastructure Patterns
+TEMPLATE_LANGUAGE = Bicep
+MAIN_TEMPLATE = main.bicep
+RESOURCE_TEMPLATE = resources.bicep
+GENERATED = ARM template from Bicep
+
+// Deployment Patterns
+DEPLOY_METHODS:
+- Python: Primary automated deployment
+- PowerShell: Windows environments
+- Bash: Unix/Linux environments
+
+// Configuration Patterns
+CONFIG_MANAGEMENT:
+- Base: neo4j-values.yaml
+- Override: aks-neo4j-values.yaml
+- Scope: Environment-specific settings
+
+// Documentation Patterns
+DOC_FORMAT = Markdown
+DIAGRAMS = Mermaid
+STRUCTURE = Separated by concern
+
+// Code Patterns
+STYLE = Infrastructure-as-Code
+DESIGN = Modular templates
+AUTOMATION = Script-based
+
+// Critical Paths
+DEPLOYMENT_FLOW:
+1. Azure resources (Bicep/ARM)
+2. AKS cluster setup
+3. Neo4j via Helm
+4. Configure and validate
+
+// Known Challenges
+CHALLENGES:
+- Configuration complexity
+- Storage provisioning
+- Network security
+- Multi-environment management
+
+// Tool Usage
+REQUIRED_TOOLS:
+- Azure CLI
+- Kubectl
+- Helm
+- VSCode
+- Bicep extension
+
+// Evolution Path
+CURRENT_PHASE = Initial Setup
+NEXT_PHASE = Optimization
+FUTURE_FEATURES:
+- Multi-region deployment
+- Advanced scaling
+- Enhanced monitoring
+- Automated operations
