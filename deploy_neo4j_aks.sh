@@ -111,8 +111,13 @@ fi
 echo "Logging into Azure CLI via Device Code..."
 az login --use-device-code
 
+sleep 15s
+
 echo "Creating a new resource group... $resource_group"
 az group create --name $resource_group --location $region
+
+echo "Registering the AKS preview extension..."
+az extension update -n aks-preview --allow-preview true
 
 echo "Creating a new AKS cluster... $cluster_name. This may take a few minutes..."
 az aks create --resource-group $resource_group --name $cluster_name --node-count 2 --generate-ssh-keys
@@ -121,7 +126,7 @@ echo "Getting credentials for the AKS cluster... $cluster_name"
 az aks get-credentials -n $cluster_name -g $resource_group --admin --overwrite-existing 
 
 echo "Verifying the context to the AKS cluster..."
-#disk_id=$(az disk create --name "neo4j-volume-manual" --size-gb "10" --max-shares 1 --resource-group "${node_resource_group}" --location ${AZ_LOCATION} --output tsv --query id)
+disk_id=$(az disk create --name "neo4j-volume-manual" --size-gb "10" --max-shares 1 --resource-group "${resource_group}" --location ${region} --output tsv --query id)
 
 echo "Adding the Neo4j Helm repository..."
 helm repo add neo4j https://helm.neo4j.com/neo4j
@@ -129,16 +134,16 @@ helm repo add neo4j https://helm.neo4j.com/neo4j
 echo "Updating the Helm repository..."
 helm repo update
 
-# echo "Getting additional Neo4j plugins ..."
-# mkdir -p neo4j-plugins
-# cd neo4j-plugins
-# curl -O https://github.com/neo4j-labs/neosemantics/releases/download/5.20.0/neosemantics-5.20.0.jar
+# # echo "Getting additional Neo4j plugins ..."
+# # mkdir -p neo4j-plugins
+# # cd neo4j-plugins
+# # curl -O https://github.com/neo4j-labs/neosemantics/releases/download/5.20.0/neosemantics-5.20.0.jar
 
 echo "Creating a new namespace for Neo4j in cluster: $cluster_name ..."
 kubectl create namespace $default_namespace
 
-# helm upgrade --install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password=$password --set data.storageClassName="dynamic" --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
-helm install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password=$password --version 5.20.0 -f neo4j-values.yaml 
+#helm upgrade --install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password=$password --set data.storageClassName="dynamic" --set data.reclaimPolicy="Retain" -f aks-neo4j-values.yaml
+helm install $cluster_name neo4j/neo4j -n $default_namespace --set neo4j.password='neo4j-kg-gai' --version 5.20.0 -f aks-neo4j-values.yaml
 
 echo "Waiting for the Neo4j pod to be ready; Please be patient..."
 sleep 10s

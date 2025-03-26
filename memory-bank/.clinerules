@@ -29,6 +29,22 @@ CONFIG_MANAGEMENT:
 DOC_FORMAT = Markdown
 DIAGRAMS = Mermaid
 STRUCTURE = Separated by concern
+README_PATTERN:
+- Overview with AI/RAG context
+- Architecture diagrams
+- Prerequisites and setup
+- Deployment options by platform
+- Configuration details
+- Usage instructions
+- AI/RAG specific considerations
+
+// AI Integration Patterns
+AI_CONTEXTS:
+- Knowledge graph for RAG
+- Agent memory systems
+- Semantic search
+- Vector storage
+- LLM integration points
 
 // Code Patterns
 STYLE = Infrastructure-as-Code

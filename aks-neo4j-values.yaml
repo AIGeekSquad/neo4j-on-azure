@@ -61,7 +61,7 @@ neo4j:
   #
   # set resources for the Neo4j Container. The values set will be used for both "requests" and "limit".
   resources:
-    cpu: "1.5"
+    cpu: "0.5"
     memory: "2Gi"
 
   #add labels if required
